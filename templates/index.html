@@ -7,19 +7,19 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&family=Geist:wght@300;400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet"
   />
   <link rel="stylesheet" href="/static/css/app.css" />
   <link
     rel="icon"
-    href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' rx='5' fill='%23f5b66c'/><path d='M7 15V9h3a2.5 2.5 0 0 1 0 5H8.5' stroke='%230a0b0f' stroke-width='2' fill='none' stroke-linecap='round'/></svg>"
+    href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' rx='5' fill='%23c67d2e'/><path d='M7 15V9h3a2.5 2.5 0 0 1 0 5H8.5' stroke='white' stroke-width='2' fill='none' stroke-linecap='round'/></svg>"
   />
 </head>
 <body>
-  <div class="grain" aria-hidden="true"></div>
+  <script id="__APP__" type="application/json">{{ {"workspace_id": workspace_id} | tojson }}</script>
 
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="sidebar__header">
       <div class="logo">
         <span class="logo__mark" aria-hidden="true">
@@ -39,11 +39,48 @@
         <span class="workspace-chip__label">workspace</span>
         <span class="workspace-chip__value">{{ workspace_id[:8] }}…{{ workspace_id[-4:] }}</span>
       </div>
+
+      <label class="search" aria-label="Search reports">
+        <span class="search__icon" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+            <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M10.5 10.5l3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <input
+          type="search"
+          id="searchInput"
+          class="search__input"
+          placeholder="Search reports…"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <kbd class="search__kbd" aria-hidden="true">/</kbd>
+      </label>
     </div>
 
-    <nav class="sidebar__nav">
-      <section class="report-group" style="--delay: 0ms">
-        <header class="report-group__header">
+    <nav class="sidebar__nav" id="sidebarNav">
+      <section class="report-group report-group--recents" id="recentsGroup" hidden style="--delay: 0ms">
+        <header class="report-group__header" data-collapsible>
+          <span class="report-group__icon" aria-hidden="true">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M6 3.5V6l1.8 1.1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="report-group__title">Recent</span>
+          <span class="report-group__count" id="recentsCount">0</span>
+          <span class="report-group__chevron" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <path d="M2.5 3.5l2.5 2.5 2.5-2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </header>
+        <ul class="report-list" id="recentsList"></ul>
+      </section>
+
+      <section class="report-group" style="--delay: 40ms">
+        <header class="report-group__header" data-collapsible>
           <span class="report-group__icon" aria-hidden="true">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
               <rect x="1" y="1" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
@@ -52,6 +89,11 @@
           </span>
           <span class="report-group__title">Interactive</span>
           <span class="report-group__count">{{ interactive_reports|length }}</span>
+          <span class="report-group__chevron" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <path d="M2.5 3.5l2.5 2.5 2.5-2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
         </header>
 
         {% if interactive_reports %}
@@ -82,8 +124,8 @@
         {% endif %}
       </section>
 
-      <section class="report-group" style="--delay: 80ms">
-        <header class="report-group__header">
+      <section class="report-group" style="--delay: 100ms">
+        <header class="report-group__header" data-collapsible>
           <span class="report-group__icon" aria-hidden="true">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
               <rect x="2" y="1" width="8" height="10" rx="1" stroke="currentColor" stroke-width="1.2"/>
@@ -92,6 +134,11 @@
           </span>
           <span class="report-group__title">Paginated</span>
           <span class="report-group__count">{{ paginated_reports|length }}</span>
+          <span class="report-group__chevron" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <path d="M2.5 3.5l2.5 2.5 2.5-2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
         </header>
 
         {% if paginated_reports %}
@@ -123,7 +170,7 @@
       </section>
 
       <section class="report-group" style="--delay: 160ms">
-        <header class="report-group__header">
+        <header class="report-group__header" data-collapsible>
           <span class="report-group__icon" aria-hidden="true">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
               <rect x="1" y="1" width="4.5" height="4.5" rx="1" stroke="currentColor" stroke-width="1.2"/>
@@ -134,6 +181,11 @@
           </span>
           <span class="report-group__title">Dashboards</span>
           <span class="report-group__count">{{ dashboards|length }}</span>
+          <span class="report-group__chevron" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <path d="M2.5 3.5l2.5 2.5 2.5-2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
         </header>
 
         {% if dashboards %}
@@ -162,6 +214,10 @@
           <div class="report-list report-list--empty">No dashboards in workspace yet.</div>
         {% endif %}
       </section>
+
+      <div class="report-list report-list--no-match" id="noMatch" hidden>
+        <span>No reports match your search.</span>
+      </div>
     </nav>
 
     <footer class="sidebar__footer">
@@ -189,30 +245,70 @@
     {% endif %}
 
     <header class="topbar">
-      <div class="breadcrumb">
-        <span class="breadcrumb__workspace">MyEmbedWorkspace</span>
-        <span class="breadcrumb__sep" aria-hidden="true">/</span>
-        <span class="breadcrumb__report" id="currentReportName">No report selected</span>
+      <div class="topbar__left">
+        <div class="breadcrumb">
+          <span class="breadcrumb__workspace">MyEmbedWorkspace</span>
+          <span class="breadcrumb__sep" aria-hidden="true">/</span>
+          <span class="breadcrumb__report" id="currentReportName">No report selected</span>
+        </div>
+        <div class="meta-strip" id="metaStrip" hidden>
+          <span class="meta-strip__id" id="metaReportId"></span>
+          <span class="meta-strip__sep" aria-hidden="true">·</span>
+          <span class="meta-strip__token" id="metaToken">token idle</span>
+        </div>
       </div>
       <div class="topbar__right">
         <span class="type-badge" id="currentReportType" hidden></span>
-        <button class="refresh-btn" id="refreshBtn" title="Reload page">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-            <path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-            <path d="M13.5 2.5v3h-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
+        <div class="action-row">
+          <a
+            class="action-btn"
+            id="openInPbi"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Open in Power BI"
+            hidden
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <path d="M6 3H3v10h10v-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+              <path d="M9.5 2.5H13v3.5M13 2.5L7 8.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <button class="action-btn" id="copyLinkBtn" title="Copy shareable link" hidden>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <path d="M7 9l2 2M9 7l-2-2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+              <path d="M9 5.5L10.5 4a2.5 2.5 0 113.5 3.5L12.5 9M7 10.5L5.5 12a2.5 2.5 0 11-3.5-3.5L3.5 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button class="action-btn" id="fullscreenBtn" title="Toggle fullscreen (F)">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" class="action-btn__icon-enter">
+              <path d="M2.5 5.5v-3h3M13.5 5.5v-3h-3M2.5 10.5v3h3M13.5 10.5v3h-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" class="action-btn__icon-exit">
+              <path d="M5.5 2.5v3h-3M10.5 2.5v3h3M5.5 13.5v-3h-3M10.5 13.5v-3h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button class="action-btn" id="refreshBtn" title="Reload page">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+              <path d="M13.5 2.5v3h-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </header>
 
     <section class="stage" id="stage">
       <div class="empty-state" id="emptyState">
         <div class="empty-state__ornament" aria-hidden="true">
-          <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
-            <circle cx="60" cy="60" r="58" stroke="currentColor" stroke-width="0.5" stroke-dasharray="2 4" opacity="0.35"/>
-            <circle cx="60" cy="60" r="40" stroke="currentColor" stroke-width="0.5" opacity="0.5"/>
-            <rect x="42" y="42" width="36" height="36" rx="2" stroke="currentColor" stroke-width="1" opacity="0.8"/>
-            <path d="M50 68V52M58 68V48M66 68V56M74 68V46" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <svg width="96" height="96" viewBox="0 0 96 96" fill="none">
+            <rect x="16" y="16" width="64" height="64" rx="10" stroke="currentColor" stroke-width="1" opacity="0.5"/>
+            <rect x="26" y="36" width="8" height="30" rx="1.5" fill="currentColor" opacity="0.12"/>
+            <rect x="40" y="28" width="8" height="38" rx="1.5" fill="currentColor" opacity="0.18"/>
+            <rect x="54" y="44" width="8" height="22" rx="1.5" fill="currentColor" opacity="0.12"/>
+            <path d="M22 30L34 36L48 24L62 32L74 26" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.75"/>
+            <circle cx="22" cy="30" r="2" fill="var(--accent)"/>
+            <circle cx="74" cy="26" r="2" fill="var(--accent)"/>
           </svg>
         </div>
         <h1 class="empty-state__title">
@@ -220,33 +316,93 @@
           <span class="empty-state__title-sub">to see it rendered here.</span>
         </h1>
         <p class="empty-state__body">
-          Reports are loaded live from your Power BI workspace using a service-principal token.
-          Click any item in the sidebar to embed it in this pane.
+          Reports load live from your Power BI workspace using a service-principal token.
+          Click any item in the sidebar — or press <kbd class="empty-state__kbd">/</kbd> to search.
         </p>
-        <div class="empty-state__hints">
-          <div class="hint">
-            <span class="hint__kbd">①</span>
-            <span>Auth via MSAL client-credentials</span>
+
+        <div class="pipeline" aria-hidden="true">
+          <div class="pipeline__node" style="--i: 0">
+            <div class="pipeline__icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <rect x="2" y="5" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+                <path d="M5 5V3.5a3 3 0 116 0V5" stroke="currentColor" stroke-width="1.3"/>
+              </svg>
+            </div>
+            <div class="pipeline__body">
+              <div class="pipeline__label">MSAL</div>
+              <div class="pipeline__caption">Client credentials</div>
+            </div>
           </div>
-          <div class="hint">
-            <span class="hint__kbd">②</span>
-            <span>Embed token minted per click</span>
+          <span class="pipeline__arrow" aria-hidden="true">
+            <svg width="36" height="10" viewBox="0 0 36 10" fill="none">
+              <path d="M0 5h32" stroke="var(--accent)" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="1 3"/>
+              <path d="M28 2l4 3-4 3" stroke="var(--accent)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </span>
+          <div class="pipeline__node" style="--i: 1">
+            <div class="pipeline__icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 2l5 2.5v4c0 3-2 5-5 5.5-3-.5-5-2.5-5-5.5v-4L8 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+                <path d="M6 8l1.5 1.5L10.5 6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="pipeline__body">
+              <div class="pipeline__label">Embed token</div>
+              <div class="pipeline__caption">Minted per click</div>
+            </div>
           </div>
-          <div class="hint">
-            <span class="hint__kbd">③</span>
-            <span>Rendered via powerbi-client SDK</span>
+          <span class="pipeline__arrow" aria-hidden="true">
+            <svg width="36" height="10" viewBox="0 0 36 10" fill="none">
+              <path d="M0 5h32" stroke="var(--accent)" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="1 3"/>
+              <path d="M28 2l4 3-4 3" stroke="var(--accent)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </span>
+          <div class="pipeline__node" style="--i: 2">
+            <div class="pipeline__icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <rect x="2" y="3" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+                <path d="M5 6.5l2 2 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="pipeline__body">
+              <div class="pipeline__label">SDK</div>
+              <div class="pipeline__caption">powerbi-client renders</div>
+            </div>
           </div>
+        </div>
+
+        <div class="jumpback" id="jumpback" hidden>
+          <div class="jumpback__label">Jump back in</div>
+          <div class="jumpback__cards" id="jumpbackCards"></div>
         </div>
       </div>
 
       <div class="loader" id="loader" hidden>
-        <div class="loader__spinner" aria-hidden="true"></div>
-        <div class="loader__text">Minting embed token…</div>
+        <div class="skeleton" aria-hidden="true">
+          <div class="skeleton__topbar">
+            <div class="skeleton__bar skeleton__bar--title"></div>
+            <div class="skeleton__bar skeleton__bar--tag"></div>
+          </div>
+          <div class="skeleton__grid">
+            <div class="skeleton__tile skeleton__tile--tall"></div>
+            <div class="skeleton__tile"></div>
+            <div class="skeleton__tile"></div>
+            <div class="skeleton__tile skeleton__tile--wide"></div>
+          </div>
+        </div>
+        <div class="loader__status">
+          <div class="loader__progress"><div class="loader__progress-bar" id="loaderBar"></div></div>
+          <div class="loader__text">Minting embed token…</div>
+        </div>
       </div>
 
-      <div id="embedContainer" class="embed-container"></div>
+      <div class="embed-card" id="embedCard">
+        <div id="embedContainer" class="embed-container"></div>
+      </div>
     </section>
   </main>
+
+  <div class="toast-mount" id="toastMount" aria-live="polite" aria-atomic="true"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/powerbi-client@2.23.1/dist/powerbi.min.js"></script>
   <script src="/static/js/embed.js"></script>
